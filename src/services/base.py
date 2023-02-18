@@ -49,7 +49,7 @@ async def add_url_batch(original_urls: List[str],
     return shorten_urls
 
 
-async def mark_as_deleted(url, session):
+async def mark_as_deleted(url: str, session: AsyncSession) -> bool:
     result = await session.execute(select(True).where(URL.original == url))
     if result.scalar() is None:
         return False

@@ -9,7 +9,7 @@ from main import app
 
 def setup_module() -> None:
     os.environ['SQLALCHEMY_DATABASE_URL'] = (
-            'postgresql+asyncpg://postgres:postgres@localhost:35432/urls'  # ggggggggggggggggggg
+        'postgresql+asyncpg://postgres:postgres@localhost:5432/urls'
     )
 
 
