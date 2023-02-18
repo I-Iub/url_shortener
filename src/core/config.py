@@ -5,7 +5,7 @@ from core.logger import LOGGING
 
 logging_config.dictConfig(LOGGING)
 
-PROJECT_NAME = os.getenv('PROJECT_NAME', 'library')
+PROJECT_NAME = os.getenv('PROJECT_NAME', 'url shortener')
 PROJECT_HOST = os.getenv('PROJECT_HOST', '127.0.0.1')
 PROJECT_PORT = int(os.getenv('PROJECT_PORT', '8080'))
 

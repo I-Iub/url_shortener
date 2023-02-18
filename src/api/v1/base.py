@@ -1,9 +1,10 @@
 from typing import List, Union
+
 from fastapi import APIRouter, Depends, Response, status
 
 from api.v1.schemas import OriginalURL, ShortURL, ShortURLBatch, Status
-from db.database import get_session
 from core.config import SOURCE_NETLOCK
+from db.database import get_session
 from services.base import (add_url, add_url_batch, get_original,
                            get_url_status, mark_as_deleted)
 
