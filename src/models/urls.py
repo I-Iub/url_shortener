@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from db.database import Base
@@ -10,6 +10,7 @@ class URL(Base):
     id = Column(Integer, primary_key=True, index=True)
     original = Column(String, unique=True, index=True)
     short = Column(String, unique=True, index=True)
+    deleted = Column(Boolean, default=False)
 
 
 class Pass(Base):

@@ -1,6 +1,6 @@
 import datetime
 from typing import List
-from pydantic import AnyUrl, BaseModel, HttpUrl
+from pydantic import AnyUrl, BaseModel
 
 
 class OriginalURL(BaseModel):
@@ -9,6 +9,11 @@ class OriginalURL(BaseModel):
 
 class ShortURL(BaseModel):
     short_url_id: str
+
+
+class ShortURLBatch(BaseModel):
+    short_url_id: str
+    short_url: str
 
 
 class Status(BaseModel):

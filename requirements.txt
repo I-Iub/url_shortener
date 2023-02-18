@@ -14,7 +14,6 @@ Mako==1.2.4
 MarkupSafe==2.1.2
 mccabe==0.7.0
 orjson==3.4.1
-pkg_resources==0.0.0
 pycodestyle==2.10.0
 pydantic==1.9.0
 pyflakes==3.0.1
