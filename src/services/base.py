@@ -1,5 +1,4 @@
 import datetime
-import logging
 from hashlib import blake2b
 from typing import List, Optional, Tuple, Union
 
@@ -11,8 +10,6 @@ from sqlalchemy.sql.expression import select, update
 from core.config import SHORT_URL_LENGTH
 from models.urls import URL, Pass
 
-log = logging.getLogger()
-
 
 def get_shorten_url_id(original_url: str) -> str:
     path_part = blake2b(digest_size=SHORT_URL_LENGTH)
@@ -23,7 +20,7 @@ def get_shorten_url_id(original_url: str) -> str:
 async def add_url(original_url: str,
                   session: AsyncSession) -> str:
     result = await session.execute(
-        select(URL).where(URL.original == original_url)  # noqa
+        select(URL).where(URL.original == original_url)
     )
     url: URL = result.scalar()
     if url is None:
@@ -65,7 +62,7 @@ async def mark_as_deleted(url, session):
 async def get_original(short_url_id: str,
                        session: AsyncSession) -> Union[str, bool, None]:
     result = await session.execute(
-        select(URL).where(URL.short == short_url_id)  # noqa
+        select(URL).where(URL.short == short_url_id)
     )
     original_url = result.scalar()
     if original_url is None:
