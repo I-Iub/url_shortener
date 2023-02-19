@@ -7,8 +7,8 @@ from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import select, update
 
-from core.config import SHORT_URL_LENGTH
-from models.urls import URL, Pass
+from src.core.config import SHORT_URL_LENGTH
+from src.models.urls import URL, Pass
 
 
 def get_shorten_url_id(original_url: str) -> str:
@@ -81,14 +81,14 @@ async def get_url_status(
 ) -> Tuple[int, Optional[List[datetime.datetime]]]:
     passes = await session.execute(
         select(func.count()).join_from(URL, Pass)
-        .where(URL.short == short_url_id).where(URL.deleted is False)
+        .where(URL.short == short_url_id).where(URL.deleted == False)
     )
     if not full_info:
         return passes.scalar(), None
 
     times = await session.execute(
         select(Pass.time).join_from(URL, Pass)
-        .where(URL.short == short_url_id).where(URL.deleted is False)
+        .where(URL.short == short_url_id).where(URL.deleted == False)
         .limit(max_result).offset(offset)
     )
     return passes.scalar(), list(times.scalars())

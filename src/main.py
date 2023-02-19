@@ -6,9 +6,9 @@ from fastapi import FastAPI, Request, Response, status
 from fastapi.responses import ORJSONResponse
 from starlette.responses import StreamingResponse
 
-from api.v1 import base
-from core import config
-from core.logger import LOGGING
+from src.api.v1 import base
+from src.core import config
+from src.core.logger import LOGGING
 
 logging_config.dictConfig(LOGGING)
 app = FastAPI(

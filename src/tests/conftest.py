@@ -4,11 +4,11 @@ from typing import AsyncGenerator
 import pytest_asyncio
 from httpx import AsyncClient
 
-from main import app
+from src.main import app
 
 
 def setup_module() -> None:
-    os.environ['SQLALCHEMY_DATABASE_URL'] = (
+    os.environ['DSN'] = (
         'postgresql+asyncpg://postgres:postgres@localhost:5432/urls'
     )
 
