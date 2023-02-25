@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.api.v1.schemas import OriginalURL, ShortURL, ShortURLBatch, Status
 from src.core.config import SOURCE_NETLOCK
 from src.db.database import get_session
-from src.services.base import (add_url, add_url_batch, get_original,
+from src.services.base import (create_records, add_url_batch, get_original,
                                get_url_status, mark_as_deleted)
 
 router = APIRouter()
@@ -21,7 +21,7 @@ router = APIRouter()
 async def post_url(original_url: OriginalURL,
                    session: AsyncSession = Depends(get_session)
                    ) -> Any:
-    return {'short_url_id': await add_url(original_url.url, session)}
+    return {'short_url_id': await create_records(original_url.url, session)}
 
 
 @router.post('/shorten',
@@ -40,10 +40,10 @@ async def post_many_url(original_urls: List[OriginalURL],
     ) for url_id in short_url_ids)
 
 
-@router.delete('/delete',
-               response_model=None,
-               status_code=status.HTTP_204_NO_CONTENT,
-               summary='Пометить переданную url-ссылку как удалённую.')
+@router.post('/delete',
+             response_model=None,
+             status_code=status.HTTP_204_NO_CONTENT,
+             summary='Пометить переданную url-ссылку как удалённую.')
 async def delete_url(original_url: OriginalURL,
                      session: AsyncSession = Depends(get_session)
                      ) -> Optional[Response]:

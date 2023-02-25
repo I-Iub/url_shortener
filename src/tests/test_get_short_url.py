@@ -1,19 +1,48 @@
+from typing import Any, Callable
+
 import pytest
 from fastapi import status
 from httpx import AsyncClient
 
+from src.api.v1.base import post_url
 
-@pytest.mark.asyncio
-async def test_post_correct_url(client: AsyncClient) -> None:
-    response = await client.post(
-        '/api/v1/',
-        json={'url': 'https://xyz.original.org/path1/path2'}
-    )
+
+@pytest.mark.parametrize(
+    'url, expected',
+    [('https://xyz.original.org/path1/path1', '1b2324d6583610d4d5'),
+     ('https://xyz.original.org/path1/path2', 'f3dfd9d8b5213bed48')])
+async def test_post_correct_url(client: AsyncClient,
+                                url_path_for: Callable,
+                                db_session,
+                                url: str,
+                                expected: str) -> None:
+    response = await client.post(url_path_for(post_url.__name__),
+                                 json={'url': url})
+    assert response.json() == {'short_url_id': expected}
     assert response.status_code == status.HTTP_201_CREATED
-    assert response.json().get('short_url_id') == 'f3dfd9d8b5213bed48'
 
 
-@pytest.mark.asyncio
-async def test_post_incorrect_url(client: AsyncClient) -> None:
-    response = await client.post('/api/v1/', json={'url': 'incorrect_url'})
+@pytest.mark.parametrize('url', ['incorrect_url', 1, {}, None])
+async def test_post_incorrect_url_incorrect_url(client: AsyncClient,
+                                                url_path_for: Callable,
+                                                url: Any) -> None:
+    response = await client.post(url_path_for(post_url.__name__),
+                                 json={'url': url})
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+
+@pytest.mark.parametrize(
+    'url, expected',
+    [('https://xyz.original.org/path0/path1', '23230447fc1f360b19'),
+     # post url where deleted = True:
+     ('https://xyz.original.org/path0/path5', '8f7a675f2b54a804e5')]
+)
+async def test_post_already_exists_url(client: AsyncClient,
+                                       url_path_for: Callable,
+                                       url: str,
+                                       expected: str,
+                                       create_url_and_pass: Callable) -> None:
+    response = await client.post(url_path_for(post_url.__name__),
+                                 json={'url': url})
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response.json() == {'short_url_id': expected}

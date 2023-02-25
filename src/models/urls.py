@@ -3,13 +3,16 @@ from sqlalchemy.orm import relationship
 
 from src.db.database import Base
 
+MAX_LEN_ORIGINAL = 2048
+MAX_LEN_SHORT = 100
+
 
 class URL(Base):
     __tablename__ = 'urls'
 
     id = Column(Integer, primary_key=True, index=True)
-    original = Column(String, unique=True, index=True)
-    short = Column(String, unique=True, index=True)
+    original = Column(String(length=MAX_LEN_ORIGINAL), unique=True, index=True)
+    short = Column(String(length=MAX_LEN_SHORT), unique=True, index=True)
     deleted = Column(Boolean, default=False)
 
 

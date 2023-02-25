@@ -2,7 +2,6 @@ import datetime
 from hashlib import blake2b
 from typing import List, Optional, Tuple, Union
 
-from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import select, update
@@ -17,20 +16,22 @@ def get_shorten_url_id(original_url: str) -> str:
     return path_part.hexdigest()
 
 
-async def add_url(original_url: str,
-                  session: AsyncSession) -> str:
-    result = await session.execute(
-        select(URL).where(URL.original == original_url)
+async def create_records(original_url: str,
+                         session: AsyncSession) -> str:
+    shorten_url_id = get_shorten_url_id(original_url)
+    url_record = [dict(original=original_url, short=shorten_url_id)]
+    statement = (
+        insert(URL).values(url_record)
+        .on_conflict_do_update(index_elements=['original'],
+                               set_={'deleted': False})
+        .returning(URL.id)
     )
-    url: URL = result.scalar()
-    if url is None:
-        shorten_url_id = get_shorten_url_id(original_url)
-        url = URL(original=original_url, short=shorten_url_id)
-    url.deleted = False
-    pass_ = Pass(url=url, time=datetime.datetime.now())
+    result = await session.execute(statement)
+    url_id = result.scalar()
+    pass_ = Pass(url_id=url_id, time=datetime.datetime.now())
     session.add(pass_)
     await session.commit()
-    return url.short
+    return shorten_url_id
 
 
 async def add_url_batch(original_urls: List[str],
@@ -50,11 +51,13 @@ async def add_url_batch(original_urls: List[str],
 
 
 async def mark_as_deleted(url: str, session: AsyncSession) -> bool:
-    result = await session.execute(select(True).where(URL.original == url))
+    statement = (
+        update(URL).where(URL.original == url).values(deleted=True)
+        .returning(URL.id)
+    )
+    result = await session.execute(statement)
     if result.scalar() is None:
         return False
-    statement = update(URL).where(URL.original == url).values(deleted=True)
-    await session.execute(statement)
     await session.commit()
     return True
 
@@ -79,16 +82,12 @@ async def get_url_status(
         max_result: int = 10,
         offset: int = 0
 ) -> Tuple[int, Optional[List[datetime.datetime]]]:
-    passes = await session.execute(
-        select(func.count()).join_from(URL, Pass)
-        .where(URL.short == short_url_id).where(URL.deleted == False)
-    )
-    if not full_info:
-        return passes.scalar(), None
-
-    times = await session.execute(
+    result = await session.execute(
         select(Pass.time).join_from(URL, Pass)
         .where(URL.short == short_url_id).where(URL.deleted == False)
         .limit(max_result).offset(offset)
     )
-    return passes.scalar(), list(times.scalars())
+    times = list(result.scalars())
+    if not full_info:
+        return len(times), None
+    return len(times), times
