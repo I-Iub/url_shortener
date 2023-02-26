@@ -46,8 +46,7 @@ async def test_engine(_database_url):
 
 @pytest_asyncio.fixture
 async def test_app(db_session):
-    async def override_get_db() -> AsyncGenerator[
-            AsyncSession, None]:
+    async def override_get_db() -> AsyncGenerator[AsyncSession, None]:
         yield db_session
 
     app.dependency_overrides[get_session] = override_get_db
@@ -88,6 +87,24 @@ async def create_url_and_pass(db_session: AsyncSession):
     date = datetime.datetime(2023, 2, 1, 12, 0)
     url_ids = result.scalars()
     for idx, url_id in enumerate(url_ids, start=1):
-        pass_ = Pass(url_id=url_id, time=date + datetime.timedelta(idx))
+        pass_ = Pass(url_id=url_id,
+                     time=date + datetime.timedelta(minutes=idx))
+        db_session.add(pass_)
+    await db_session.commit()
+
+
+@pytest_asyncio.fixture
+async def create_urls_with_many_passes(db_session: AsyncSession):
+    url_records = [
+        {'original': 'https://xyz.original.org/path0/path6',
+         'short': '6b990563b16cbe9f07'},
+    ]
+    result = await db_session.execute(
+        insert(URL).values(url_records).returning(URL.id)
+    )
+    url_id = result.scalar()
+    for minute in range(10):
+        pass_ = Pass(url_id=url_id,
+                     time=datetime.datetime(2023, 2, 1, 13, minute))
         db_session.add(pass_)
     await db_session.commit()
