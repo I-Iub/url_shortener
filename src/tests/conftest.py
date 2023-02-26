@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from src.db.database import Base, get_session
 from src.main import app
-from src.models.urls import Pass, URL
+from src.models.urls import Redirects, URL
 
 
 @pytest.fixture(scope='session')
@@ -66,7 +66,7 @@ async def client(test_app) -> AsyncGenerator[AsyncClient, None]:
 
 
 @pytest_asyncio.fixture
-async def create_url_and_pass(db_session: AsyncSession):
+async def create_url_and_redirects(db_session: AsyncSession):
     url_records = [
         {'original': 'https://xyz.original.org/path0/path1',
          'short': '23230447fc1f360b19'},
@@ -87,14 +87,14 @@ async def create_url_and_pass(db_session: AsyncSession):
     date = datetime.datetime(2023, 2, 1, 12, 0)
     url_ids = result.scalars()
     for idx, url_id in enumerate(url_ids, start=1):
-        pass_ = Pass(url_id=url_id,
-                     time=date + datetime.timedelta(minutes=idx))
-        db_session.add(pass_)
+        redirects = Redirects(url_id=url_id,
+                              time=date + datetime.timedelta(minutes=idx))
+        db_session.add(redirects)
     await db_session.commit()
 
 
 @pytest_asyncio.fixture
-async def create_urls_with_many_passes(db_session: AsyncSession):
+async def create_urls_with_many_redirects(db_session: AsyncSession):
     url_records = [
         {'original': 'https://xyz.original.org/path0/path6',
          'short': '6b990563b16cbe9f07'},
@@ -104,7 +104,7 @@ async def create_urls_with_many_passes(db_session: AsyncSession):
     )
     url_id = result.scalar()
     for minute in range(10):
-        pass_ = Pass(url_id=url_id,
-                     time=datetime.datetime(2023, 2, 1, 13, minute))
-        db_session.add(pass_)
+        redirects = Redirects(url_id=url_id,
+                              time=datetime.datetime(2023, 2, 1, 13, minute))
+        db_session.add(redirects)
     await db_session.commit()

@@ -81,9 +81,9 @@ async def get_status(short_url_id: str,
                      full_info: bool = False,
                      max_result: int = 10,
                      offset: int = 0) -> Any:
-    passes, times = await get_url_status(
+    redirects, times = await get_url_status(
         short_url_id, session, full_info, max_result, offset
     )
-    if not passes:
+    if not redirects:
         return Response(status_code=status.HTTP_404_NOT_FOUND)
-    return dict(passes=passes, times=times)
+    return dict(redirects=redirects, times=times)

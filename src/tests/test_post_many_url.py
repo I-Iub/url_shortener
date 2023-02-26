@@ -19,7 +19,7 @@ async def test_post_new_valid_urls(client: AsyncClient,
 
 async def test_post_existing_urls(client: AsyncClient,
                                   url_path_for: Callable,
-                                  create_url_and_pass: Callable) -> None:
+                                  create_url_and_redirects: Callable) -> None:
     response = await client.post(
         url_path_for(post_many_url.__name__),
         json=[{'url': 'https://xyz.original.org/new'},

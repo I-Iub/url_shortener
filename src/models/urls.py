@@ -16,12 +16,12 @@ class URL(Base):
     deleted = Column(Boolean, default=False)
 
 
-class Pass(Base):
-    __tablename__ = 'passes'
+class Redirects(Base):
+    __tablename__ = 'redirects'
 
     id = Column(Integer, primary_key=True, index=True)
     url_id = Column(Integer,
                     ForeignKey('urls.id', ondelete='CASCADE'),
                     nullable=False)
-    url = relationship(URL, backref='passes')
+    url = relationship(URL, backref='redirects')
     time = Column(DateTime)

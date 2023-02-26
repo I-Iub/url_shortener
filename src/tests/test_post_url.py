@@ -31,7 +31,7 @@ async def test_post_existing_url(client: AsyncClient,
                                  url_path_for: Callable,
                                  url: str,
                                  expected: str,
-                                 create_url_and_pass: Callable) -> None:
+                                 create_url_and_redirects: Callable) -> None:
     response = await client.post(url_path_for(post_url.__name__),
                                  json={'url': url})
     assert response.status_code == status.HTTP_201_CREATED

@@ -13,7 +13,7 @@ from src.api.v1.base import delete_url
 ])
 async def test_post_existing_url(client: AsyncClient,
                                  url_path_for: Callable,
-                                 create_url_and_pass: Callable,
+                                 create_url_and_redirects: Callable,
                                  url: str) -> None:
     response = await client.post(
         url_path_for(delete_url.__name__),

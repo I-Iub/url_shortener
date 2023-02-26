@@ -14,7 +14,7 @@ from src.api.v1.base import get_original_url
 )
 async def test_get_existing_url(client: AsyncClient,
                                 url_path_for: Callable,
-                                create_url_and_pass: Callable,
+                                create_url_and_redirects: Callable,
                                 short_url_id: str,
                                 expected: dict) -> None:
     response = await client.get(
@@ -35,7 +35,7 @@ async def test_get_non_existing_url(client: AsyncClient,
 
 async def test_get_deleted_url(client: AsyncClient,
                                url_path_for: Callable,
-                               create_url_and_pass: Callable) -> None:
+                               create_url_and_redirects: Callable) -> None:
     response = await client.get(url_path_for(
         get_original_url.__name__,
         short_url_id='0cc3fb6c19e2c1f730'

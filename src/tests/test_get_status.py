@@ -9,15 +9,15 @@ from src.api.v1.base import get_status
 async def test_get_existing_url_status(
         client: AsyncClient,
         url_path_for: Callable,
-        create_url_and_pass: Callable,
-        create_urls_with_many_passes: Callable
+        create_url_and_redirects: Callable,
+        create_urls_with_many_redirects: Callable
 ) -> None:
     response = await client.get(url_path_for(
         get_status.__name__,
         short_url_id='23230447fc1f360b19'
     ))
     assert response.status_code == status.HTTP_200_OK
-    assert response.json().get('passes') == 1
+    assert response.json().get('redirects') == 1
     assert response.json().get('times') is None
 
     response = await client.get(url_path_for(
@@ -25,7 +25,7 @@ async def test_get_existing_url_status(
         short_url_id='6b990563b16cbe9f07'
     ))
     assert response.status_code == status.HTTP_200_OK
-    assert response.json().get('passes') == 10
+    assert response.json().get('redirects') == 10
     assert response.json().get('times') is None
 
     response = await client.get(
@@ -36,7 +36,7 @@ async def test_get_existing_url_status(
         params={'full_info': True}
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json().get('passes') == 10
+    assert response.json().get('redirects') == 10
     assert response.json().get('times') == ['2023-02-01T13:00:00',
                                             '2023-02-01T13:01:00',
                                             '2023-02-01T13:02:00',
@@ -57,7 +57,7 @@ async def test_get_existing_url_status(
                    'offset': 5}
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json().get('passes') == 3
+    assert response.json().get('redirects') == 3
     assert response.json().get('times') == ['2023-02-01T13:05:00',
                                             '2023-02-01T13:06:00',
                                             '2023-02-01T13:07:00']
@@ -71,15 +71,17 @@ async def test_get_existing_url_status(
                    'offset': 7}
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json().get('passes') == 3
+    assert response.json().get('redirects') == 3
     assert response.json().get('times') == ['2023-02-01T13:07:00',
                                             '2023-02-01T13:08:00',
                                             '2023-02-01T13:09:00']
 
 
-async def test_get_non_existing_url(client: AsyncClient,
-                                    url_path_for: Callable,
-                                    create_url_and_pass: Callable) -> None:
+async def test_get_non_existing_url(
+        client: AsyncClient,
+        url_path_for: Callable,
+        create_url_and_redirects: Callable
+) -> None:
     response = await client.get(url_path_for(
         get_status.__name__,
         short_url_id='not_exists'
@@ -89,7 +91,7 @@ async def test_get_non_existing_url(client: AsyncClient,
 
 async def test_get_deleted_url(client: AsyncClient,
                                url_path_for: Callable,
-                               create_url_and_pass: Callable) -> None:
+                               create_url_and_redirects: Callable) -> None:
     response = await client.get(url_path_for(
         get_status.__name__,
         short_url_id='8f7a675f2b54a804e5'

@@ -18,5 +18,5 @@ class ShortURLBatch(BaseModel):
 
 
 class Status(BaseModel):
-    passes: int
+    redirects: int
     times: List[datetime.datetime] = None

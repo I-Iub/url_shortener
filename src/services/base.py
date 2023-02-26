@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.expression import select, update
 
 from src.core.config import SHORT_URL_LENGTH
-from src.models.urls import URL, Pass
+from src.models.urls import URL, Redirects
 
 
 def get_shorten_url_id(original_url: str) -> str:
@@ -28,8 +28,8 @@ async def create_records(original_url: str,
     )
     result = await session.execute(statement)
     url_id = result.scalar()
-    pass_ = Pass(url_id=url_id, time=datetime.datetime.now())
-    session.add(pass_)
+    redirect = Redirects(url_id=url_id, time=datetime.datetime.now())
+    session.add(redirect)
     await session.commit()
     return shorten_url_id
 
@@ -83,7 +83,7 @@ async def get_url_status(
         offset: int = 0
 ) -> Tuple[int, Optional[List[datetime.datetime]]]:
     result = await session.execute(
-        select(Pass.time).join_from(URL, Pass)
+        select(Redirects.time).join_from(URL, Redirects)
         .where(URL.short == short_url_id).where(URL.deleted == False)
         .limit(max_result).offset(offset)
     )

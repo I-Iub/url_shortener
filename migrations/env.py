@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 
 from src.db.database import Base
 from src.core.config import DSN
-from src.models.urls import Pass, URL
+from src.models.urls import Redirects, URL
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
