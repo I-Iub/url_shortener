@@ -1,19 +1,19 @@
+import asyncio
 import datetime
 import os
 import sys
 from typing import AsyncGenerator, Callable
 
-import asyncio
 import pytest
 import pytest_asyncio
-from httpx import AsyncClient
 from dotenv import load_dotenv
+from httpx import AsyncClient
 from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from src.db.database import Base, get_session
 from src.main import app
-from src.models.urls import Redirects, URL
+from src.models.urls import URL, Redirects
 
 load_dotenv()
 

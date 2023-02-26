@@ -84,7 +84,7 @@ async def get_url_status(
 ) -> Tuple[int, Optional[List[datetime.datetime]]]:
     result = await session.execute(
         select(Redirects.time).join_from(URL, Redirects)
-        .where(URL.short == short_url_id).where(URL.deleted == False)
+        .where(URL.short == short_url_id).where(URL.deleted == False)  # noqa
         .limit(max_result).offset(offset)
     )
     times = list(result.scalars())
