@@ -1,4 +1,5 @@
 import datetime
+import os
 import sys
 from typing import AsyncGenerator, Callable
 
@@ -6,12 +7,15 @@ import asyncio
 import pytest
 import pytest_asyncio
 from httpx import AsyncClient
+from dotenv import load_dotenv
 from sqlalchemy import insert
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 from src.db.database import Base, get_session
 from src.main import app
 from src.models.urls import Redirects, URL
+
+load_dotenv()
 
 
 @pytest.fixture(scope='session')
@@ -31,7 +35,10 @@ def event_loop():
 
 @pytest.fixture(scope='session')
 def _database_url():
-    return 'postgresql+asyncpg://postgres:postgres@localhost:65432/urls'
+    return os.getenv(
+        'DSN_TEST',
+        'postgresql+asyncpg://postgres:postgres@localhost:65432/urls'
+    )
 
 
 @pytest.fixture(scope='session')

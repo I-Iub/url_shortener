@@ -32,7 +32,7 @@ async def blacklist_check(
 
 if __name__ == '__main__':
     uvicorn.run(
-        'main:app',
+        'src.main:app',
         host=config.PROJECT_HOST,
         port=config.PROJECT_PORT,
     )
