@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.api.v1.schemas import OriginalURL, ShortURL, ShortURLBatch, Status
 from src.core.config import SOURCE_NETLOCK
 from src.db.database import get_session
-from src.services.base import (create_records, add_url_batch, get_original,
+from src.services.base import (add_url_batch, create_records, get_original,
                                get_url_status, mark_as_deleted)
 
 router = APIRouter()

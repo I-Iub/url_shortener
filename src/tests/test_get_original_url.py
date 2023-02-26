@@ -2,8 +2,8 @@ from typing import Callable
 
 import pytest
 from fastapi import status
-
 from httpx import AsyncClient
+
 from src.api.v1.base import get_original_url
 
 

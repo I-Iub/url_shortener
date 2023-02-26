@@ -1,8 +1,8 @@
 from typing import Callable
 
 from fastapi import status
-
 from httpx import AsyncClient
+
 from src.api.v1.base import get_status
 
 
