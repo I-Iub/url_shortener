@@ -21,7 +21,7 @@ router = APIRouter()
 async def post_url(original_url: OriginalURL,
                    session: AsyncSession = Depends(get_session)
                    ) -> Any:
-    return {'short_url_id': await create_records(original_url.url, session)}
+    return await create_records(original_url.url, session)
 
 
 @router.post('/shorten',

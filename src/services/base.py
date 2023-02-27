@@ -1,10 +1,10 @@
 import datetime
 from hashlib import blake2b
-from typing import List, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.sql.expression import select, update
+from sqlalchemy.sql.expression import and_, select, update
 
 from src.core.config import SHORT_URL_LENGTH
 from src.models.urls import URL, Redirects
@@ -17,7 +17,7 @@ def get_shorten_url_id(original_url: str) -> str:
 
 
 async def create_records(original_url: str,
-                         session: AsyncSession) -> str:
+                         session: AsyncSession) -> Dict[str, str]:
     shorten_url_id = get_shorten_url_id(original_url)
     url_record = [dict(original=original_url, short=shorten_url_id)]
     statement = (
@@ -31,7 +31,7 @@ async def create_records(original_url: str,
     redirect = Redirects(url_id=url_id, time=datetime.datetime.now())
     session.add(redirect)
     await session.commit()
-    return shorten_url_id
+    return {'short_url_id': shorten_url_id}
 
 
 async def add_url_batch(original_urls: List[str],
@@ -84,7 +84,7 @@ async def get_url_status(
 ) -> Tuple[int, Optional[List[datetime.datetime]]]:
     result = await session.execute(
         select(Redirects.time).join_from(URL, Redirects)
-        .where(URL.short == short_url_id).where(URL.deleted == False)  # noqa
+        .where(and_(URL.short == short_url_id, URL.deleted == False))  # noqa
         .limit(max_result).offset(offset)
     )
     times = list(result.scalars())
